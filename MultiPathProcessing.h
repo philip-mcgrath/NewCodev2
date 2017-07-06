@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <complex>
 
 #include "Global.h"
 #include "RandomNumberGenerator.h"
@@ -20,12 +21,12 @@ using namespace std;
 // as it adds more paths to the processing queue quicker.
 
 struct PathInfo {
-    PathInfo(long parent_id, long id, long level, long clock, RandomState random_state)
-            : parent_id(parent_id), id(id), level(level), clock(clock), random_state(random_state) { };
+    PathInfo(long parent_id, long id, long level, int Njump, long clock, RandomState random_state)
+            : parent_id(parent_id), id(id), level(level), Njump(Njump), clock(clock), random_state(random_state) { };
     long parent_id;
     long id;
     long level;
-    //probability z
+    int Njump;
     long clock;
     RandomState random_state;
 };
@@ -52,12 +53,13 @@ typedef queue<PathInfo>  PathInfoQueue_t;
 struct PathData {
     PathData(long n_data1D, long n_data2D_1, long n_data2D_2) // dimension parameters of the PathData
             : n_data1D(n_data1D), n_data2D_1(n_data2D_1), n_data2D_2(n_data2D_2),
-              valid(false), parent_id(-1), data1D(n_data1D, 0.0), data2D(n_data2D_1,vector<double>(n_data2D_2, 0.0)) { }
+              valid(false), parent_id(-1), probability(1.0), data1D(n_data1D, 0.0), data2D(n_data2D_1,vector<double>(n_data2D_2, 0.0)) { }
     // memory is allocated using constructor initialization
     // explicit initialization of vectors with 0.0
     bool                    valid; // identify processed paths
     // given that N_CLOCKS is a stop criteria, not all levels might be reached
     long                    parent_id;
+    complex <double>        probability;
     double                  m[4][4];
     vector<double>          data1D;
     vector<vector<double>>  data2D;

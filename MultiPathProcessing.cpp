@@ -1,4 +1,5 @@
 #include "MultiPathProcessing.h"
+#include <complex>
 
 // Global Data
 PathInfoQueue_t  path_info_queue;
@@ -12,6 +13,7 @@ void process_path(PathInfo& path_info) {
 
     cout << endl;
     cout << "Process Path " << path_info.id << " (level " << path_info.level << " )" << endl;
+    cout << "No. of jumps in path: " << path_info.Njump << endl;
 
     // Read ancestors PathData
     long ancestor_id = path_info.parent_id;
@@ -26,7 +28,7 @@ void process_path(PathInfo& path_info) {
     }
 
     // !!! PROCESSING
-
+    complex <double> z;
     /* Jump condition to be placed here;
      *  //calculating matrix elements
 
@@ -78,6 +80,7 @@ void process_path(PathInfo& path_info) {
 
     long clock = path_info.clock;
     while (clock < N_CLOCKS) {
+
         double r = path_info.random_state.uniform_real(0.0, 1.0);
         cout << "clock: " << clock << " random number: " << r << endl;
         clock++;
@@ -96,7 +99,7 @@ void process_path(PathInfo& path_info) {
         }
     }
 
-    if ((path_info.level < N_LEVELS) &&  (clock < N_CLOCKS)) {
+    if ((path_info.Njump < N_JUMPS) &&  (clock < N_CLOCKS)) {
 
         // Calculate the following paths ids using a formula (vs. using a shared counter)
         // to avoid synchronization between parallel executions of process_path().
@@ -115,13 +118,13 @@ void process_path(PathInfo& path_info) {
             unsigned long seed = path_info.random_state.uniform_int(0, path_info.random_state.MAX_INT);
             cout << "Child Seed " << p << ": " << seed << endl;
             RandomState temp_random_state = RandomState(seed);
-            path_info_queue.emplace(PathInfo(path_info.id, path_id + p, path_info.level + 1, clock, temp_random_state));
+            path_info_queue.emplace(PathInfo(path_info.id, path_id + p, path_info.level + 1, path_info.Njump + 1,  clock, temp_random_state));
             // (parent_id, id, level, clock, random_state)
         }
         // Pass on random state from current path to one of the following paths
         // after the random state has been used to generate new seeds for the following paths
         // to make sure that different seeds are generated in the following path.
-        path_info_queue.emplace(PathInfo(path_info.id, path_id + (N_PATHS-1), path_info.level+1, clock, path_info.random_state));
+        path_info_queue.emplace(PathInfo(path_info.id, path_id + (N_PATHS-1), path_info.level+1, path_info.Njump, clock, path_info.random_state));
         // (parent_id, id, level, clock, random_state)
     }
 
