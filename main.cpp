@@ -50,7 +50,7 @@ int main() {
     multi_paths_data.resize(n_paths, PathData(n_data1D, n_data2D_1, n_data2D_2));
 
     // Enqueue root path information
-    path_info_queue.emplace(PathInfo(-1, 0, 0, 0, random_state));
+    path_info_queue.emplace(PathInfo(-1, 0, 0, 0, 0, random_state));
     // (parent_id -1 for no parent, id, level, clock, random_state)
 
     // SERIAL IMPLEMENTATION
