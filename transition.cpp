@@ -19,7 +19,7 @@ double cosb1,cosb2, sinb1,sinb2,cosg1,cosg2,sing1,sing2;
 
 double wwa0_00(){
     double x;
-    x = 1 + cosa;
+    x = 1.0 + cosa;
     return x*0.5;
 }
 
@@ -62,12 +62,12 @@ double wwa0_12(){
 double wwa0_13(){
     double x;
     x = -sina;
-    return  x*0.5;
+    return x*0.5;
 }
 
 double wwa0_20(){
     double x;
-    x =  sina;
+    x = sina;
     return x*0.5;
 }
 
@@ -97,19 +97,19 @@ double wwa0_30(){
 
 double wwa0_31(){
     double x;
-    x =  sina;
+    x = sina;
     return x*0.5;
 }
 
 double wwa0_32(){
     double x;
-    x =  sina;
+    x = sina;
     return x*0.5;
 }
 
 double wwa0_33(){
     double x;
-    x = 1 + cosa;
+    x = 1.0 + cosa;
     return x*0.5;
 }
 
@@ -242,7 +242,7 @@ double wwa2_02(){
 
 double wwa2_03(){
     double x;
-    x = sina  + sinb2;
+    x = sina + sinb2;
     return  x;
 }
 
@@ -738,8 +738,6 @@ void setwww(){
 
 
 double wigner_harm_osc(double *x, double *p){
-    double prod,y1,y2;
-    int i;
     /* set wigner to one has it drops out of calculation for our initial
     density */
     return 1.0;
@@ -751,10 +749,7 @@ double dens_init_0(double *x,double *p, int k){
     double g,gg;
     g = G(x); gg = g*g;
     z = 0.5*(1.0 + 2.0*g + gg)/(1 + gg);
-
     return (z*wigner_harm_osc(x,p));
-
-
 }
 
 double dens_init_1(double *x,double *p, int k){
@@ -826,7 +821,7 @@ double H_0(double *x,double *p, int k){
     double z;
     double g,gg;
 
-    z = Hb(x,p) - dE(x)/2.0;
+    z = Hb(x,p) - dE(x)*0.5;
     return z;
 }
 
@@ -842,6 +837,6 @@ double H_3(double *x,double *p, int k){
     double z;
     double g,gg;
 
-    z = Hb(x,p) + dE(x)/2.0;
+    z = Hb(x,p) + dE(x)*0.5;
     return z;
 }

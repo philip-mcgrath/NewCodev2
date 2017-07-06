@@ -90,6 +90,7 @@ void process_path(PathInfo& path_info) {
     // Write PathData
     multi_paths_data[path_info.id].valid = true;
     multi_paths_data[path_info.id].parent_id = path_info.parent_id;
+    multi_paths_data[path_info.id].probability = z;
     for (long i=0; i< multi_paths_data[path_info.id].n_data1D; ++i) {
         multi_paths_data[path_info.id].data1D[i] = path_info.id;
     }
