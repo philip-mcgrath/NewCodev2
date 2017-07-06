@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/philipmcgrath/Documents/U_Docs/Code/NewCodev2/main.cpp
+iostream
+-
+Global.h
+/home/philipmcgrath/Documents/U_Docs/Code/NewCodev2/Global.h
+RandomNumberGenerator.h
+/home/philipmcgrath/Documents/U_Docs/Code/NewCodev2/RandomNumberGenerator.h
+MultiPathProcessing.h
+/home/philipmcgrath/Documents/U_Docs/Code/NewCodev2/MultiPathProcessing.h
+

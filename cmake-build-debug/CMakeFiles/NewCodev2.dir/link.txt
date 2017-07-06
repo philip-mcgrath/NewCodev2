@@ -1,0 +1,1 @@
+/usr/bin/c++   -g   CMakeFiles/NewCodev2.dir/main.cpp.o  -o NewCodev2 
