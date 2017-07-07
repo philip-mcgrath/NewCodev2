@@ -1,32 +1,31 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
 #include <iostream>
+#include <complex>
+
 
 #include "Global.h"
 #include "RandomNumberGenerator.h"
 #include "MultiPathProcessing.h"
+#include "variable.h"
+#include "variable-trajectory.h"
+
+#include "dmatrix.c"
+#include "imatrix.c"
+
+#include "density.cpp"
+#include "functions.cpp"
+#include "transition.cpp"
+
 
 // Global Data
 extern PathInfoQueue_t  path_info_queue;
 extern PathDataVector_t multi_paths_data;
 
-char  datafilename[80];
-FILE   *stream;
-
-
-// ========================  INPUT VALUES  ======================== //
-int N_bath;
-int N_slice;
-int Ncut;
-double timestep;
-double T;
-int init_seed;
-int Nsample;
-double w_max;
-double eta;
-int beta;
-double delta /*timestep*/;
-double ppower;
-
 using namespace std;
+
+#include <gsl/gsl_rng.h>
 
 // =============================================================================
 // Multi Path Processing Program
@@ -54,14 +53,6 @@ int main() {
 
     // !!! INPUT
 
-
-    cout << "Print information about new stream: "<< endl;
-    cout << "Input datafilename, N_bath, N_slice, Ncut" << endl;
-    cout << "timestep, T, init_seed, Nsample" << endl;
-    cout << "w_max, eta, beta, delta, power" << endl;
-    cin >> datafilename >> N_bath >> N_slice >> Ncut >> timestep >> T >> init_seed >> Nsample >> w_max >> eta >> beta >> delta >> ppower;
-
-
     // Random Number Generator
     unsigned long seed = 0; // fixed seed for reproducibility, otherwise use RandomState()
     cout << "Root Seed: " << seed << endl;
@@ -76,7 +67,7 @@ int main() {
     multi_paths_data.resize(n_paths, PathData(n_data1D, n_data2D_1, n_data2D_2));
 
     // Enqueue root path information
-    path_info_queue.emplace(PathInfo(-1, 0, 0, 0, 0, random_state));
+    path_info_queue.emplace(PathInfo(-1, 0, 0, 0, random_state));
     // (parent_id -1 for no parent, id, level, clock, random_state)
 
     // SERIAL IMPLEMENTATION
