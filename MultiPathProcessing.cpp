@@ -28,7 +28,9 @@ void process_path(PathInfo& path_info) {
     }
 
     // !!! PROCESSING
-    complex <double> z;
+    complex<double> z;
+
+
     /* Jump condition to be placed here;
      *  //calculating matrix elements
 
@@ -79,23 +81,29 @@ void process_path(PathInfo& path_info) {
         */
 
     long clock = path_info.clock;
+    int N_CLOCKS = N_slice;
     while (clock < N_CLOCKS) {
 
         double r = path_info.random_state.uniform_real(0.0, 1.0);
         cout << "clock: " << clock << " random number: " << r << endl;
+
+
+
+
         clock++;
         if (r > 0.95) break;
     }
+
 
     // Write PathData
     multi_paths_data[path_info.id].valid = true;
     multi_paths_data[path_info.id].parent_id = path_info.parent_id;
     multi_paths_data[path_info.id].probability = z;
-    for (long i=0; i< multi_paths_data[path_info.id].n_data1D; ++i) {
+    for (long i = 0; i < multi_paths_data[path_info.id].n_data1D; ++i) { //initial density values for children
         multi_paths_data[path_info.id].data1D[i] = path_info.id;
     }
-    for (long i=0; i< multi_paths_data[path_info.id].n_data2D_1; ++i) {
-        for (long j=0; j < multi_paths_data[path_info.id].n_data2D_2; ++j) {
+    for (long i=0; i < multi_paths_data[path_info.id].n_data2D_1; ++i) {
+        for (long j = 0; j < multi_paths_data[path_info.id].n_data2D_2; ++j) {
             multi_paths_data[path_info.id].data2D[i][j] = path_info.id;
         }
     }
@@ -128,6 +136,7 @@ void process_path(PathInfo& path_info) {
         path_info_queue.emplace(PathInfo(path_info.id, path_id + (N_PATHS-1), path_info.level+1, path_info.Njump, clock, path_info.random_state));
         // (parent_id, id, level, clock, random_state)
     }
+
 
     return;
 }

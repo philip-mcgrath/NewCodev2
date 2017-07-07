@@ -1,31 +1,35 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
 #include <iostream>
-#include <complex>
-
 
 #include "Global.h"
 #include "RandomNumberGenerator.h"
 #include "MultiPathProcessing.h"
-#include "variable.h"
-#include "variable-trajectory.h"
 
-#include "dmatrix.c"
-#include "imatrix.c"
-
-#include "density.cpp"
-#include "functions.cpp"
-#include "transition.cpp"
-
+using namespace std;
 
 // Global Data
 extern PathInfoQueue_t  path_info_queue;
 extern PathDataVector_t multi_paths_data;
 
-using namespace std;
+char  datafilename[80];
+FILE   *stream;
 
-#include <gsl/gsl_rng.h>
+//double  *abszsum1, *argzsum1; //0 - summand trajectory dependent ; 1 - sum
+//double  *habszsum1, *hargzsum1;
+
+// ========================  INPUT VALUES  ======================== //
+int N_bath;
+int N_slice;
+int Ncut;
+double timestep;
+double T;
+unsigned long init_seed;
+int Nsample;
+double w_max;
+double eta;
+int beta;
+double delta;
+double ppower;
+
 
 // =============================================================================
 // Multi Path Processing Program
@@ -53,26 +57,57 @@ int main() {
 
     // !!! INPUT
 
+    /* Initialize Stream - Scope 0
+    cout << "Print information about new stream: "<< endl;
+    cout << "Input datafilename, N_bath, N_slice, Ncut" << endl;
+    cout << "timestep, T, init_seed, Nsample" << endl;
+    cout << "w_max, eta, beta, delta, power" << endl;
+    cin >> datafilename >> N_bath >> N_slice >> Ncut >> timestep >> T >> init_seed >> Nsample >> w_max >> eta >> beta >> delta >> ppower;
+    */
+    /* initialize stream  - scope 0 */
+    cout << " Print information about new stream:" << endl;
+    cout << "Input datafilename" << endl;
+    cin >> datafilename;
+    N_bath = 200;
+    N_slice = 20;
+    Ncut = 10;
+    timestep = 0.05;
+    T = 15;
+    init_seed = 0;
+    Nsample = 10000;
+    w_max = 3;
+    eta = 0.13;
+    beta = 25;
+    delta = 0.8;
+    ppower = 100000;
+
+
     // Random Number Generator
-    unsigned long seed = 0; // fixed seed for reproducibility, otherwise use RandomState()
-    cout << "Root Seed: " << seed << endl;
-    RandomState random_state = RandomState(seed); // root path
+    // fixed seed for reproducibility, otherwise use RandomState()
+    cout << "Root Seed: " << init_seed << endl;
+    RandomState random_state = RandomState(init_seed); // root path
 
     // !!! Multi Paths Data
-    long n_data1D   = 5; // dimension parameters
-    long n_data2D_1 = 5;
-    long n_data2D_2 = 6;
+    long n_data1D   = 4; // dimension parameters // inital values needed by children
+    long n_data2D_1 = N_slice; // sum1 length
+    long n_data2D_2 = 4; // abszum, argzum, habszum, hargzsum
     long n_paths = pow(N_PATHS, (N_LEVELS+1.0)) - 1;
 
     multi_paths_data.resize(n_paths, PathData(n_data1D, n_data2D_1, n_data2D_2));
 
+    // ======================= Memory Allocation ================================
+
+
+
+
     // Enqueue root path information
-    path_info_queue.emplace(PathInfo(-1, 0, 0, 0, random_state));
+    path_info_queue.emplace(PathInfo(-1, 0, 0, 0, 0, random_state));
     // (parent_id -1 for no parent, id, level, clock, random_state)
 
     // SERIAL IMPLEMENTATION
     // can easily be parallelized:
     // as all paths that are in the queue can be processed in parallel!
+
 
     // Loop: all paths breath first
     while (!path_info_queue.empty()) {
@@ -114,6 +149,11 @@ int main() {
     // When implemented as C-style dynamic memory (malloc, free) or
     // C++-style dynamic memory (new, delete []),
     // memory needs to be de-allocated explicitly here.
+
+
+    // ======================== Memory Deallocation ================================
+
+
 
     return 0;
 }

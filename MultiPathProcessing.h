@@ -11,6 +11,11 @@
 
 using namespace std;
 
+//extern double  *abszsum1, *argzsum1; //0 - summand trajectory dependent ; 1 - sum
+//extern double  *habszsum1, *hargzsum1;
+
+extern int N_slice;
+
 // =============================================================================
 // Path Processing Queue (FIFO)
 // =============================================================================
@@ -53,7 +58,7 @@ typedef queue<PathInfo>  PathInfoQueue_t;
 struct PathData {
     PathData(long n_data1D, long n_data2D_1, long n_data2D_2) // dimension parameters of the PathData
             : n_data1D(n_data1D), n_data2D_1(n_data2D_1), n_data2D_2(n_data2D_2),
-              valid(false), parent_id(-1), probability(1.0), data1D(n_data1D, 0.0), data2D(n_data2D_1,vector<double>(n_data2D_2, 0.0)) { }
+              valid(false), parent_id(-1), probability(1.0, 0.0), data1D(n_data1D, 0.0), data2D(n_data2D_1,vector<double>(n_data2D_2, 0.0)) { }
     // memory is allocated using constructor initialization
     // explicit initialization of vectors with 0.0
     bool                    valid; // identify processed paths
