@@ -1,14 +1,32 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
 #include <iostream>
+#include <complex>
+
 
 #include "Global.h"
 #include "RandomNumberGenerator.h"
 #include "MultiPathProcessing.h"
+#include "variable.h"
+#include "variable-trajectory.h"
 
-using namespace std;
+#include "dmatrix.c"
+#include "imatrix.c"
+
+#include "density.cpp"
+#include "functions.cpp"
+#include "transition.cpp"
+
 
 // Global Data
 extern PathInfoQueue_t  path_info_queue;
 extern PathDataVector_t multi_paths_data;
+
+using namespace std;
+
+#include <gsl/gsl_rng.h>
+
 
 char  datafilename[80];
 FILE   *stream;
