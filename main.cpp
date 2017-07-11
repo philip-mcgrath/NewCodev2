@@ -8,15 +8,7 @@
 #include "Global.h"
 #include "RandomNumberGenerator.h"
 #include "MultiPathProcessing.h"
-#include "variable.h"
-#include "variable-trajectory.h"
-
-#include "dmatrix.c"
-#include "imatrix.c"
-
-#include "density.cpp"
-#include "functions.cpp"
-#include "transition.cpp"
+#include "transition.h"
 
 
 // Global Data
@@ -27,13 +19,8 @@ using namespace std;
 
 #include <gsl/gsl_rng.h>
 
-
 char  datafilename[80];
 FILE   *stream;
-
-//double  *abszsum1, *argzsum1; //0 - summand trajectory dependent ; 1 - sum
-//double  *habszsum1, *hargzsum1;
-
 // ========================  INPUT VALUES  ======================== //
 int N_bath;
 int N_slice;
@@ -48,6 +35,39 @@ int beta;
 double delta;
 double ppower;
 
+// ============================================================================
+// Variables
+// ============================================================================
+double ddd4;
+double ddd;
+double Dt;
+double Pdotdhat;
+double de;
+double sina;
+double cosa;
+double alpha;
+
+complex<double> z = 1.0;
+complex<double> oldz;
+complex<double> I(0, 1);
+
+// ============================================================================
+// Vectors
+// ============================================================================
+
+double  *mww;
+double *f;
+double *c;
+
+
+
+
+// Pointers to Functions ====================================
+double (*dens_init[4])(double*, double*, int );
+double (*obs[4])(double*, double*, int );
+double (*obs1[4])(double*, double*, int );
+
+double (* www[6][4][4])();
 
 // =============================================================================
 // Multi Path Processing Program
@@ -73,7 +93,9 @@ double ppower;
 
 int main() {
 
-    // !!! INPUT
+    // ================================================================================================================
+    // INPUT
+    // ================================================================================================================
 
     /* Initialize Stream - Scope 0
     cout << "Print information about new stream: "<< endl;
@@ -100,6 +122,13 @@ int main() {
     ppower = 100000;
 
 
+    // ================================================================================================================
+    // Memory Allocation
+    // ================================================================================================================
+    mww = new double[N_bath];
+    f = new double[N_bath];
+    c = new double[N_bath];
+
     // Random Number Generator
     // fixed seed for reproducibility, otherwise use RandomState()
     cout << "Root Seed: " << init_seed << endl;
@@ -107,16 +136,55 @@ int main() {
 
     // !!! Multi Paths Data
     long n_data1D   = 4; // dimension parameters // inital values needed by children
-    long n_data2D_1 = N_slice; // sum1 length
-    long n_data2D_2 = 4; // abszum, argzum, habszum, hargzsum
+    long n_data2D_1 = 4; // sum1 length
+    long n_data2D_2 = N_slice; // abszum, argzum, habszum, hargzsum
     long n_paths = pow(N_PATHS, (N_LEVELS+1.0)) - 1;
 
     multi_paths_data.resize(n_paths, PathData(n_data1D, n_data2D_1, n_data2D_2));
 
-    // ======================= Memory Allocation ================================
+    // ================================================================================================================
+    // Initialization Values
+    // ================================================================================================================
+
+    //  gsl_rng_env_setup();
+
+//    TT = gsl_rng_default;
+//    rr = gsl_rng_alloc(TT);
+
+
+    dens_init[0] = dens_init_0; dens_init[1] = dens_init_1;
+    dens_init[2] = dens_init_2; dens_init[3] = dens_init_3;
+    obs[0] = obs_0; obs[1] = obs_1; obs[2] = obs_2; obs[3] = obs_3;
+    obs1[0] = H_0; obs1[1] = H_1; obs1[2] = H_2; obs1[3] = H_3;
+    ddd4 = delta*delta*0.25;
+    ddd =  delta*delta;
+    Dt  = T/N_slice;
 
 
 
+
+//    bath_para(eta,w_max);       /* compute system parameters etc */
+//
+//    //  bath corresponds to eq. 53//   for (i = 0; i < N_bath; i++)
+//        mu[i] = beta*w[i]*0.5;
+//    for (i = 0; i < N_bath; i++){
+//        sig[i] = 1.0/sqrt(w[i]*2.0*tanh(mu[i]));
+//        mww[i] = -m[i]*w[i]*w[i];
+//        dtdtm[i] = -0.5*timestep*timestep/m[i];
+//    }
+//
+//    for (i = 0; i < N_bath; i++)
+//        sig[i+N_bath] = 1.0*sqrt(w[i]/(2.0*tanh(mu[i])));
+//    force[0] = F1;         /* assign pointers to force fields */
+//    force[1] = Fb;
+//    force[2] = Fb;
+//    force[3] = F2;
+//    setwww();
+
+
+    // ================================================================================================================
+    // Processing Path Segments
+    // ================================================================================================================
 
     // Enqueue root path information
     path_info_queue.emplace(PathInfo(-1, 0, 0, 0, 0, random_state));
@@ -145,7 +213,11 @@ int main() {
         process_path(path_info);
     }
 
-    // !!! OUTPUT
+
+
+    // ================================================================================================================
+    // OUTPUT
+    // ================================================================================================================
 
     long path = n_paths-1; // choose any one between 0 and n_paths-1
 
@@ -168,10 +240,12 @@ int main() {
     // C++-style dynamic memory (new, delete []),
     // memory needs to be de-allocated explicitly here.
 
-
-    // ======================== Memory Deallocation ================================
-
-
+    // =======================================================================================================
+    // Memory Deallocation
+    // ==========================================================================================================
+    delete [] mww;
+    delete [] f;
+    delete [] c;
 
     return 0;
 }

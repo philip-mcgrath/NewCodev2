@@ -1,9 +1,26 @@
 #include "MultiPathProcessing.h"
-#include <complex>
+
 
 // Global Data
 PathInfoQueue_t  path_info_queue;
 PathDataVector_t multi_paths_data;
+
+// =============================================================================
+// Variables
+// =============================================================================
+
+// Local =================
+
+
+
+
+// Extern ================
+extern complex<double> z;
+
+
+
+
+
 
 // =============================================================================
 // Path Processing
@@ -28,56 +45,11 @@ void process_path(PathInfo& path_info) {
     }
 
     // !!! PROCESSING
-    complex<double> z;
+
 
 
     /* Jump condition to be placed here;
-     *  //calculating matrix elements
-
-        //avoid index problem if X < # then = 0, otherwise Y
-        ap0 = fabs(p0 = ((www[1][SS0][0]() < -7775.0) ? 0.0 : www[0][SS0][0]()));
-        ap1 = fabs(p1 = ((www[1][SS0][1]() < -7775.0) ? 0.0 : www[0][SS0][1]()));
-        ap2 = fabs(p2 = ((www[1][SS0][2]() < -7775.0) ? 0.0 : www[0][SS0][2]()));
-        ap3 = fabs(p3 = ((www[1][SS0][3]() < -7775.0) ? 0.0 : www[0][SS0][3]()));
-        dn2 = ap0 + ap1 + ap2 + ap3;
-
-        xx = dn2 * (gsl_rng_uniform(rr));   // choosing matrix elements
-        // printf(" oldz  real %lf imag %lf\t", real(z), imag(z));
-
-        //similar to perturbation expansion
-        //keeping track of jumps
-        //corralted sapling needed here
-        //for certain x will get unlikely jumps
-        oldz = z;
-        SS2 = SS1;
-        if (xx < ap0) {
-            SS1 = 0;
-            z *= p0 * dn2 / ap0;
-        } else if (xx < ap0 + ap1) {
-            SS1 = 1;
-            z *= p1 * dn2 / ap1;
-        } else if (xx < ap0 + ap1 + ap2) {
-            SS1 = 2;
-            z *= p2 * dn2 / ap2;
-        } else {
-            SS1 = 3;
-            z *= p3 * dn2 / ap3;
-        }
-        if (SS0 != SS1)
-            NNjmp++;
-        if (NNjmp > Ncut)
-            return 0;
-
-      My major issue is I'm not sure how this is implemented. Discuss with Athina, once other modules are added then it should be a simple
-      call job.
-
-      There is a need for the child production. Here's the idea;
-
-      if (SS0 != SS1)
-            NNjmp++ and produce 4 children;
-      if (NNjmp > Ncut)
-            return 0;
-
+     *
         */
 
     long clock = path_info.clock;

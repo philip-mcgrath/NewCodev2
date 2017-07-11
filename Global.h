@@ -8,7 +8,7 @@
 const int N_PATHS  = 2;
 const int N_LEVELS = 2;
 const int N_JUMPS = 4;
-
+const int N_CLOCKS = 20;
 
 
 #endif

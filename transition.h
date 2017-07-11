@@ -1,6 +1,15 @@
 #ifndef TRANSITION
 #define TRANSITION
 
+#include   <stdlib.h>
+#include   <stdio.h>
+#include   <math.h>
+#include   <iostream>
+#include   <complex>
+#include   <vector>
+
+#include "functions.h"
+
 void setwww();
 double dens_init_0(double *x,double *p, int k);
 double dens_init_1(double *x,double *p, int k);
