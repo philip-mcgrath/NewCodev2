@@ -1,8 +1,13 @@
 #ifndef RANDOM
 #define RANDOM
 
-double gauss1(double mean_x, double sigma_x, int i);
-void randnums(int rand_dim, double *rand_vec);
-int gauss_init_W(double *R, double *v);
+#include   <stdlib.h>
+#include   <stdio.h>
+#include   <math.h>
+#include   <iostream>
+#include   <complex>
+#include <gsl/gsl_rng.h>
+
+void gauss_init_W(double *R, double *P);
 
 #endif

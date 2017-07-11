@@ -9,6 +9,7 @@
 #include "RandomNumberGenerator.h"
 #include "MultiPathProcessing.h"
 #include "transition.h"
+#include "random.h"
 
 
 // Global Data
@@ -47,6 +48,14 @@ double sina;
 double cosa;
 double alpha;
 
+int SS0;
+int SS1;
+int SS3;
+int adiabat_flag = -1;
+
+const gsl_rng_type * TT;
+gsl_rng * rr;
+
 complex<double> z = 1.0;
 complex<double> oldz;
 complex<double> I(0, 1);
@@ -55,10 +64,16 @@ complex<double> I(0, 1);
 // Vectors
 // ============================================================================
 
-double  *mww;
+double *mww;
+double *mu;
+double *sig;
+double *dtdtm;
+double *R1;
+double *v;
 double *f;
 double *c;
-
+double *m;
+double *w;
 
 
 
@@ -68,6 +83,7 @@ double (*obs[4])(double*, double*, int );
 double (*obs1[4])(double*, double*, int );
 
 double (* www[6][4][4])();
+void (*force[4])(double *);
 
 // =============================================================================
 // Multi Path Processing Program
@@ -126,8 +142,18 @@ int main() {
     // Memory Allocation
     // ================================================================================================================
     mww = new double[N_bath];
+    mu = new double[N_bath];
+    sig =  new double[2*N_bath];
+    dtdtm = new double[N_bath];
+
+    R1 = new double[N_bath];
+    v = new double[N_bath];
     f = new double[N_bath];
     c = new double[N_bath];
+    m = new double[N_bath];
+    w = new double[N_bath];
+
+
 
     // Random Number Generator
     // fixed seed for reproducibility, otherwise use RandomState()
@@ -146,10 +172,10 @@ int main() {
     // Initialization Values
     // ================================================================================================================
 
-    //  gsl_rng_env_setup();
+    gsl_rng_env_setup();
 
-//    TT = gsl_rng_default;
-//    rr = gsl_rng_alloc(TT);
+    TT = gsl_rng_default;
+    rr = gsl_rng_alloc(TT);
 
 
     dens_init[0] = dens_init_0; dens_init[1] = dens_init_1;
@@ -161,25 +187,44 @@ int main() {
     Dt  = T/N_slice;
 
 
+    bath_para(eta,w_max);       /* compute system parameters etc */
+
+   //  bath corresponds to eq. 53//   for (i = 0; i < N_bath; i++)
+    for (int i = 0; i < N_bath; ++i)
+        mu[i] = beta*w[i]*0.5;
+    for (int i = 0; i < N_bath; ++i){
+        sig[i] = 1.0/sqrt(w[i]*2.0*tanh(mu[i]));
+        mww[i] = -m[i]*w[i]*w[i];
+        dtdtm[i] = -0.5*timestep*timestep/m[i];
+    }
+
+    for (int i = 0; i < N_bath; ++i)
+        sig[i+N_bath] = 1.0*sqrt(w[i]/(2.0*tanh(mu[i])));
+    force[0] = F1;         /* assign pointers to force fields */
+    force[1] = Fb;
+    force[2] = Fb;
+    force[3] = F2;
+    setwww();
 
 
-//    bath_para(eta,w_max);       /* compute system parameters etc */
-//
-//    //  bath corresponds to eq. 53//   for (i = 0; i < N_bath; i++)
-//        mu[i] = beta*w[i]*0.5;
-//    for (i = 0; i < N_bath; i++){
-//        sig[i] = 1.0/sqrt(w[i]*2.0*tanh(mu[i]));
-//        mww[i] = -m[i]*w[i]*w[i];
-//        dtdtm[i] = -0.5*timestep*timestep/m[i];
-//    }
-//
-//    for (i = 0; i < N_bath; i++)
-//        sig[i+N_bath] = 1.0*sqrt(w[i]/(2.0*tanh(mu[i])));
-//    force[0] = F1;         /* assign pointers to force fields */
-//    force[1] = Fb;
-//    force[2] = Fb;
-//    force[3] = F2;
-//    setwww();
+    // ==============================================================================================================
+    // Initial Distribution
+    // ==============================================================================================================
+
+    gauss_init_W(R1, v);
+    double yy = 4.0 * (gsl_rng_uniform(rr));
+    if (yy < 1.0)
+        SS3 = (SS0 = 0);
+    else if (yy < 2.0) {
+        SS0 = 1;
+        SS3 = 2;
+    } else if (yy < 3.0) {
+        SS0 = 2;
+        SS3 = 1;
+    } else
+        SS3 = (SS0 = 3);
+    z = 4.0;
+    SS1 = SS0;
 
 
     // ================================================================================================================
@@ -244,8 +289,15 @@ int main() {
     // Memory Deallocation
     // ==========================================================================================================
     delete [] mww;
+    delete [] mu;
+    delete [] sig;
+    delete [] dtdtm;
+    delete [] R1;
+    delete [] v;
     delete [] f;
     delete [] c;
+    delete [] m;
+    delete [] w;
 
     return 0;
 }
