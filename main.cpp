@@ -8,8 +8,7 @@
 #include "Global.h"
 #include "RandomNumberGenerator.h"
 #include "MultiPathProcessing.h"
-#include "transition.h"
-#include "random.h"
+
 
 
 // Global Data
@@ -18,7 +17,7 @@ extern PathDataVector_t multi_paths_data;
 
 using namespace std;
 
-#include <gsl/gsl_rng.h>
+
 
 char  datafilename[80];
 FILE   *stream;
@@ -44,20 +43,16 @@ double ddd;
 double Dt;
 double Pdotdhat;
 double de;
+double abs_d;
 double sina;
 double cosa;
-double alpha;
 
-int SS0;
-int SS1;
-int SS3;
-int adiabat_flag = -1;
+
 
 const gsl_rng_type * TT;
 gsl_rng * rr;
 
 complex<double> z = 1.0;
-complex<double> oldz;
 complex<double> I(0, 1);
 
 // ============================================================================
@@ -68,6 +63,8 @@ double *mww;
 double *mu;
 double *sig;
 double *dtdtm;
+double *dgam;
+double *dhat;
 double *R1;
 double *v;
 double *f;
@@ -130,7 +127,7 @@ int main() {
     timestep = 0.05;
     T = 15;
     init_seed = 0;
-    Nsample = 10000;
+    Nsample = 100;
     w_max = 3;
     eta = 0.13;
     beta = 25;
@@ -145,7 +142,8 @@ int main() {
     mu = new double[N_bath];
     sig =  new double[2*N_bath];
     dtdtm = new double[N_bath];
-
+    dgam = new double[N_bath];
+    dhat = new double[N_bath];
     R1 = new double[N_bath];
     v = new double[N_bath];
     f = new double[N_bath];
@@ -197,9 +195,9 @@ int main() {
         mww[i] = -m[i]*w[i]*w[i];
         dtdtm[i] = -0.5*timestep*timestep/m[i];
     }
-
     for (int i = 0; i < N_bath; ++i)
         sig[i+N_bath] = 1.0*sqrt(w[i]/(2.0*tanh(mu[i])));
+
     force[0] = F1;         /* assign pointers to force fields */
     force[1] = Fb;
     force[2] = Fb;
@@ -207,24 +205,6 @@ int main() {
     setwww();
 
 
-    // ==============================================================================================================
-    // Initial Distribution
-    // ==============================================================================================================
-
-    gauss_init_W(R1, v);
-    double yy = 4.0 * (gsl_rng_uniform(rr));
-    if (yy < 1.0)
-        SS3 = (SS0 = 0);
-    else if (yy < 2.0) {
-        SS0 = 1;
-        SS3 = 2;
-    } else if (yy < 3.0) {
-        SS0 = 2;
-        SS3 = 1;
-    } else
-        SS3 = (SS0 = 3);
-    z = 4.0;
-    SS1 = SS0;
 
 
     // ================================================================================================================
@@ -255,7 +235,12 @@ int main() {
         path_info_queue.pop();
 
         // Process path
+       /* for (int i = 0; i < Nsample; ++i){
+            cout << "Particle:" << i << endl;
+            process_path(path_info);
+        }*/
         process_path(path_info);
+
     }
 
 
@@ -263,7 +248,7 @@ int main() {
     // ================================================================================================================
     // OUTPUT
     // ================================================================================================================
-
+/*
     long path = n_paths-1; // choose any one between 0 and n_paths-1
 
     cout << endl;
@@ -284,7 +269,7 @@ int main() {
     // When implemented as C-style dynamic memory (malloc, free) or
     // C++-style dynamic memory (new, delete []),
     // memory needs to be de-allocated explicitly here.
-
+*/
     // =======================================================================================================
     // Memory Deallocation
     // ==========================================================================================================
@@ -292,6 +277,8 @@ int main() {
     delete [] mu;
     delete [] sig;
     delete [] dtdtm;
+    delete [] dgam;
+    delete [] dhat;
     delete [] R1;
     delete [] v;
     delete [] f;

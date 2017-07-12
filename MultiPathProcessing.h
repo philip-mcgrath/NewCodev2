@@ -6,15 +6,13 @@
 #include <queue>
 #include <complex>
 
+#include <gsl/gsl_rng.h>
+
 #include "Global.h"
 #include "RandomNumberGenerator.h"
-
-using namespace std;
-
-//extern double  *abszsum1, *argzsum1; //0 - summand trajectory dependent ; 1 - sum
-//extern double  *habszsum1, *hargzsum1;
-
-extern int N_slice;
+#include "functions.h"
+#include "transition.h"
+#include "random.h"
 
 // =============================================================================
 // Path Processing Queue (FIFO)
