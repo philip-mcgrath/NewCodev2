@@ -86,7 +86,7 @@ double (*obs1[4])(double*, double*);
 int  density(double *x,double *p){
 
     int SS0,SS1,SS2,SS3,NNjmp =0,signPdotdhat;
-    double phase0 = 0.0,xx;
+    double phase0 = 0.0,xx,yy;
     double p0,p1,p2,p3,ap0,ap1,ap2,ap3;
     double dn2;
     complex<double> z = 1.0;
@@ -95,7 +95,7 @@ int  density(double *x,double *p){
     // Initialization of sample
 
     gauss_init_W(x, p);
-    double yy = 4.0*(gsl_rng_uniform (rr));
+    yy = 4.0*(gsl_rng_uniform (rr));
     if (yy < 1.0)
         SS3 = (SS0 = 0);
     else if (yy < 2.0){
@@ -115,27 +115,27 @@ int  density(double *x,double *p){
         PP[l] = p[l];
     }
     SS1 = SS0;
-    cout << "surface" << SS1 << endl;
+    cout << SS1 << endl;
     // ____________________________________________________________________
 
     for (int l = 0; l < N_slice; ++l) {
         SS0 = SS1;
-        phase0 = U(RR, PP, SS0, TSLICE*0.5); // exp(iLd/2) (before jump)
+        phase0 = U(RR, PP, SS0, TSLICE*0.5);
         z *= exp(I * phase0);
 
-        dd(RR); // non-adiabatic coupling matrix
-        de = dE(RR); // energy
+        dd(RR);
+        de = dE(RR);
         alpha = 0.0;
         Pdotdhat = 0;
         for (int i = 0; i < N_bath; ++i) {
-            Pdotdhat += PP[i] * dhat[i]; //parall component of dhat to momentum
+            Pdotdhat += PP[i] * dhat[i];
         }
         alpha = Pdotdhat * abs_d * TSLICE;
 
-        signPdotdhat = (Pdotdhat < 0 ? -1 : 1); // -1 if neg, 1 if pos
+        signPdotdhat = (Pdotdhat < 0 ? -1 : 1);
         Pdotdhat = fabs(Pdotdhat);
         for (int i = 0; i < N_bath; ++i)
-            Pperp[i] = PP[i] - signPdotdhat * Pdotdhat * dhat[i]; // perp component of dhat
+            Pperp[i] = PP[i] - signPdotdhat * Pdotdhat * dhat[i];
         alpha *= 2.0;
         sina = sin(alpha);
         cosa = cos(alpha);
@@ -146,60 +146,9 @@ int  density(double *x,double *p){
         ap3 = fabs(p3 = ((www[1][SS0][3]() < -7775.0) ? 0.0 : www[0][SS0][3]()));
         dn2 = ap0 + ap1 + ap2 + ap3;
         xx = dn2 * (gsl_rng_uniform(rr));   // choosing matrix elements
-        //alpha goes to 0, pdotdhat very small, matrix becomes identiy and prob of jumping goes to 0
         cout << "Prob:" << "ap0" << ap0 <<" ap1"<< ap1 <<" ap2" << ap2 <<" ap3"<< ap3 << endl;
         oldz = z;
         SS2 = SS1;
-
-
-/*        double prob0, prob1;
-
-        if (SS0 == 0){
-            prob0 = ap0/dn2;
-            prob1 = (ap1 + ap2 + ap3)/dn2;
-        }
-        else if (SS0 == 1){
-            prob0 = ap1/dn2;
-            prob1 = (ap0 + ap2 + ap3)/dn2;
-        }
-        else if (SS0 == 2){
-            prob0 = ap2/dn2;
-            prob1 = (ap0 + ap1 + ap3)/dn2;
-        }
-        else {
-            prob0 = ap3/dn2;
-            prob1 = (ap0 + ap1 + ap2)/dn2;
-        }
-
-        if (xx < prob0){
-            SS1 = SS0;
-            cout << "same" << endl;
-            //Child 0 - z *= p0
-        }
-        else {
-            NNjmp++;
-            cout << "change" << endl;
-            if (NNjmp > Ncut){
-                //break completely
-            }
-            // create children
-            // break out of loop
-            // need to transfer prob
-            z over to children
-
-            //Child 1 -
-            // SS1 = 1
-            // z *= p1/prob1
-            //Child 2 -
-            // SS2 = 2
-            // z *= p2/prob1
-            //Child 3 -
-            // SS3 = 3
-            // z *= p3/prob1
-        }
-*/
-
-
         if (xx < ap0) {
             SS1 = 0;
             z *= p0 * dn2 / ap0;
@@ -217,23 +166,20 @@ int  density(double *x,double *p){
             z *= p3 * dn2 / ap3;
             cout << SS1 << endl;
         }
-
-
-
-/*        if (SS0 != SS1)
+        if (SS0 != SS1)
             NNjmp++;
         if (NNjmp > Ncut)
             return 0;
-*/
+
         if (www[1][SS0][SS1]() != 9999.0)
             for (int i = 0; i < N_bath; ++i)
                 PP[i] = Pperp[i] + signPdotdhat * www[1][SS0][SS1]() * dhat[i];
 
 
-        phase0 = U(RR,PP,SS1,TSLICE*0.5); // exp(iLd/2) (after jump)
+        phase0 = U(RR,PP,SS1,TSLICE*0.5);
         z *= exp(I*phase0);
-
         phi = obs[SS1];
+
         abszsum0  = real(z*phi(RR,PP)*dens_init[SS3](x,p));
         argzsum0  = imag(z*phi(RR,PP)*dens_init[SS3](x,p));
         abszsum1[l] += abszsum0;
@@ -244,7 +190,7 @@ int  density(double *x,double *p){
         hargzsum0  = imag(z*phi(RR,PP)*dens_init[SS3](x,p));
         habszsum1[l] += habszsum0;
         hargzsum1[l] += hargzsum0;
-        cout << "counter " <<l << endl;
+        cout << "lth " <<l << endl;
     }
 
     return 0;
@@ -260,8 +206,7 @@ int monte(int NN_sample,double *x, double *p){
         habszsum1[i] = 0.0;
         hargzsum1[i] = 0.0;
     }
-    density(x,p);
-/*#pragma omp parallel for num_threads(8)
+#pragma omp parallel for num_threads(8)
     {
         for (int i = 0; i < NN_sample; ++i){
             density(x,p);
@@ -276,11 +221,13 @@ int monte(int NN_sample,double *x, double *p){
                     }
                 fclose(stream);
             }*/
-     //   }
-   // }
+        }
+    }
     return 0;
 
 }
+
+
 
 
 int main(int argc, char *argv[]){

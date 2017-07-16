@@ -43,5 +43,3 @@ protected:
 };
 
 #endif
-
-/* Random number generator is fine here, can be changed if needs be. */

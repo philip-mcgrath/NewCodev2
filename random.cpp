@@ -1,6 +1,6 @@
 #include "random.h"
 using namespace std;
-#include <gsl/gsl_rng.h>
+
 
 #define PI 3.141592653589793
 
@@ -10,10 +10,6 @@ extern gsl_rng * rr;
 extern double *sig;
 
 double ranVector[10001];
-
-
-
-
 
 /* Random number stuff ***************************************************************  */
 
