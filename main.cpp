@@ -310,5 +310,26 @@ int main() {
     // C++-style dynamic memory (new, delete []),
     // memory needs to be de-allocated explicitly here.
 
+    // ===============================================================
+    // Memory Deallocation
+    // ===============================================================
+    delete [] mww;
+    delete [] mu;
+    delete [] sig;
+    delete [] dtdtm;
+    delete [] dgam;
+    delete [] dhat;
+    delete [] R1;
+    delete [] v;
+    delete [] f;
+    delete [] c;
+    delete [] m;
+    delete [] w;
+    delete [] RR;
+    delete [] PP;
+    delete [] SS;
+    delete [] Pperp;
+
+
     return 0;
 }

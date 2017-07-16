@@ -116,7 +116,7 @@ void process_path(PathInfo& path_info) {
     // =========================================================================
     // Phase Space Calculation
     // =========================================================================
-    cout << change << "value of jump counter" << endl;
+
     while (change == 0 && counter < N_slice){
         cout << "Stored Inital Surface Value " <<path_info.surface << endl;
         SS0 = path_info.surface; // Put new surface as 'original' surface
@@ -209,8 +209,8 @@ void process_path(PathInfo& path_info) {
             phase0 = U(RR,PP,SS1,TSLICE*0.5); // exp(iLd/2) (after jump)
             z[SS1] *= exp(I*phase0);
             for (int i = 0; i < N_PATHS; ++i){
-                    cout << "Probabilities for each surface "<< i << ": " << z[i] << endl;
-                }
+                cout << "Probabilities for each surface "<< i << ": " << z[i] << endl;
+            }
             // Calculating new phase space points =================================
             phi = obs[SS1];
             abszsum1[SS1][counter]  = real(z[SS1]*phi(RR,PP)*dens_init[SS3](R1,v));
@@ -222,9 +222,9 @@ void process_path(PathInfo& path_info) {
         }
 
 
-        // ========================================================================
-        // POSSIBLE JUMP
-        // ========================================================================
+            // ========================================================================
+            // POSSIBLE JUMP
+            // ========================================================================
         else{
             change = 1; // Has changed surface
             Njump++;
@@ -328,9 +328,9 @@ void process_path(PathInfo& path_info) {
         multi_paths_data[path_info.id].surface[i] = S[i];
     }
 
-   /* for (long i=0; i< multi_paths_data[path_info.id].n_data1D; ++i) {
-        multi_paths_data[path_info.id].data1D[i] = path_info.id;
-    }*/
+    /* for (long i=0; i< multi_paths_data[path_info.id].n_data1D; ++i) {
+         multi_paths_data[path_info.id].data1D[i] = path_info.id;
+     }*/
     for (int i = 0; i < multi_paths_data[path_info.id].n_data2D_2; ++i) {
         multi_paths_data[path_info.id].abszsum1[0][i] = abszsum1[0][i];
         multi_paths_data[path_info.id].argzsum1[0][i] = argzsum1[0][i];
@@ -369,13 +369,13 @@ void process_path(PathInfo& path_info) {
 
         // Enqueue path following paths information
         //for (long p=0; p<(N_PATHS); ++p) {
-            // Random Number Generator
-            // new random states based on different seeds create with random state from current path
-            //unsigned long seed = path_info.random_state.uniform_int(0, path_info.random_state.MAX_INT);
-            //cout << "Child Seed " << p << ": " << seed << endl;
-            //RandomState random_state = RandomState(seed);
-            //path_info_queue.emplace(PathInfo(path_info.id, path_id + p, S[p], z[p] path_info.level + 1, Njump+1, counter/*, random_state*/));
-            // (parent_id, id, level, clock, random_state)
+        // Random Number Generator
+        // new random states based on different seeds create with random state from current path
+        //unsigned long seed = path_info.random_state.uniform_int(0, path_info.random_state.MAX_INT);
+        //cout << "Child Seed " << p << ": " << seed << endl;
+        //RandomState random_state = RandomState(seed);
+        //path_info_queue.emplace(PathInfo(path_info.id, path_id + p, S[p], z[p] path_info.level + 1, Njump+1, counter/*, random_state*/));
+        // (parent_id, id, level, clock, random_state)
         //}
         // Pass on random state from current path to one of the following paths
         // after the random state has been used to generate new seeds for the following paths
@@ -404,7 +404,5 @@ void process_path(PathInfo& path_info) {
     delete [] habszsum1;
     delete [] hargzsum1;
 
-    return;
+
 }
-
-
