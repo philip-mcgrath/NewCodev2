@@ -113,7 +113,6 @@ void process_path(PathInfo& path_info) {
         ancestor_id = multi_paths_data[ancestor_id].parent_id; // next ancestor
     }
 
-
     // =========================================================================
     // Phase Space Calculation
     // =========================================================================
@@ -310,21 +309,20 @@ void process_path(PathInfo& path_info) {
 
     // =======================================================================================================
 
-    // Write PathData
+  // Write PathData
     cout << "writing" << endl;
 
     path_info.clock = counter;
 
     multi_paths_data[path_info.id].valid = true;
     multi_paths_data[path_info.id].parent_id = path_info.parent_id;
+
     for (int i = 0; i < N_PATHS; ++i){
         multi_paths_data[path_info.id].probability[i] = z[i];
         multi_paths_data[path_info.id].surface[i] = S[i];
     }
 
-    /* for (long i=0; i< multi_paths_data[path_info.id].n_data1D; ++i) {
-         multi_paths_data[path_info.id].data1D[i] = path_info.id;
-     }*/
+
     for (int i = 0; i < multi_paths_data[path_info.id].n_data2D_2; ++i) {
         multi_paths_data[path_info.id].abszsum1[0][i] = abszsum1[0][i];
         multi_paths_data[path_info.id].argzsum1[0][i] = argzsum1[0][i];
@@ -345,6 +343,16 @@ void process_path(PathInfo& path_info) {
         multi_paths_data[path_info.id].argzsum1[3][i] = argzsum1[3][i];
         multi_paths_data[path_info.id].habszsum1[3][i] = habszsum1[3][i];
         multi_paths_data[path_info.id].hargzsum1[3][i] = hargzsum1[3][i];
+
+
+    multi_paths_data[path_info.id].probability = z;
+    for (long i = 0; i < multi_paths_data[path_info.id].n_data1D; ++i) { //initial density values for children
+        multi_paths_data[path_info.id].data1D[i] = path_info.id;
+    }
+    for (long i=0; i < multi_paths_data[path_info.id].n_data2D_1; ++i) {
+        for (long j = 0; j < multi_paths_data[path_info.id].n_data2D_2; ++j) {
+            multi_paths_data[path_info.id].data2D[i][j] = path_info.id;
+        }
 
     }
 
@@ -387,6 +395,7 @@ void process_path(PathInfo& path_info) {
         }
     }
 
+
     for (int j = 0; j < N_PATHS; ++j){
         delete [] abszsum1[j];
         delete [] argzsum1[j];
@@ -398,5 +407,7 @@ void process_path(PathInfo& path_info) {
     delete [] habszsum1;
     delete [] hargzsum1;
 
+
+    return;
 
 }
