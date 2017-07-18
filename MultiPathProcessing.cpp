@@ -96,6 +96,7 @@ void process_path(PathInfo& path_info) {
     }
 
     cout << endl;
+    cout << "------------------------------------------------------------------------" << endl;
     cout << "Process Path " << path_info.id << " (level " << path_info.level << " )" << endl;
     change = 0; // start loop calculation
     counter = path_info.clock;
@@ -208,9 +209,9 @@ void process_path(PathInfo& path_info) {
             // Trotter-Suziki Approx. from exp(iLd/2) =============================
             phase0 = U(RR,PP,SS1,TSLICE*0.5); // exp(iLd/2) (after jump)
             z[SS1] *= exp(I*phase0);
-            for (int i = 0; i < N_PATHS; ++i){
+         /*   for (int i = 0; i < N_PATHS; ++i){
                 cout << "Probabilities for each surface "<< i << ": " << z[i] << endl;
-            }
+            }*/
             // Calculating new phase space points =================================
             phi = obs[SS1];
             abszsum1[SS1][counter]  = real(z[SS1]*phi(RR,PP)*dens_init[SS3](R1,v));
@@ -219,6 +220,7 @@ void process_path(PathInfo& path_info) {
             phi = obs1[SS1];
             habszsum1[SS1][counter]  = real(z[SS1]*phi(RR,PP)*dens_init[SS3](R1,v));
             hargzsum1[SS1][counter]  = imag(z[SS1]*phi(RR,PP)*dens_init[SS3](R1,v));
+            cout << endl;
         }
 
 
@@ -272,9 +274,10 @@ void process_path(PathInfo& path_info) {
                 z[3] *= p3;
             }
 
-            for (int k = 0; k < N_PATHS; ++k){
+        /*    for (int k = 0; k < N_PATHS; ++k){
                 cout << "Probabilities for each surface "<< k << ": " << z[k] << endl;
-            }
+            }*/
+            // need to fix probabilities index
 
             for (int i = 0; i < N_PATHS; ++i) {
                 if (www[1][SS0][S[i]]() != 9999.0){
@@ -284,7 +287,7 @@ void process_path(PathInfo& path_info) {
                 }
 
                 // Trotter-Suziki Approx. from exp(iLd/2) ========================================
-                phase0 = U(RR, PP, SS1, TSLICE * 0.5); // exp(iLd/2) (after jump)
+                phase0 = U(RR, PP, S[i], TSLICE * 0.5); // exp(iLd/2) (after jump)
                 z[S[i]] *= exp(I * phase0);
 
 
@@ -305,16 +308,7 @@ void process_path(PathInfo& path_info) {
         counter++;
     } ;
 
-
-    // =========================================================================
-/*
-    long clock = path_info.clock;
-    while (clock < N_CLOCKS) {
-        double r = path_info.random_state.uniform_real(0.0, 1.0);
-        cout << "clock: " << clock << " random number: " << r << endl;
-        clock++;
-        if (r > 0.95) break;
-    }*/
+    // =======================================================================================================
 
     // Write PathData
     cout << "writing" << endl;
